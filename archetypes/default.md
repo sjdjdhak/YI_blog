@@ -8,4 +8,6 @@ summary = ""
 
 categories = []
 tags = []
+# series = ["系列名称"]
+# series_order = 1
 +++
