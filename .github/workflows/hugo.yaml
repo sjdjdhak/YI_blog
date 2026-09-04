@@ -1,0 +1,124 @@
+name: Build and deploy
+
+# 什么时候触发部署
+on:
+  push:
+    branches:
+      - main        # 每次 main 分支有新的 push 时自动部署
+
+  workflow_dispatch: # 允许你在 GitHub Actions 页面手动触发部署
+
+
+# GitHub Pages 部署所需要的权限
+permissions:
+  contents: read    # 允许读取仓库源码
+  pages: write      # 允许部署 GitHub Pages
+  id-token: write   # GitHub Pages 身份验证需要
+
+
+# 防止同时运行多个 Pages 部署任务
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+
+defaults:
+  run:
+    shell: bash
+
+
+jobs:
+
+  # =========================
+  # 第一阶段：构建 Hugo 网站
+  # =========================
+  build:
+
+    runs-on: ubuntu-latest
+
+    env:
+      HUGO_VERSION: 0.165.0   # 建议改成你本地 hugo version 显示的版本
+      TZ: Asia/Shanghai       # 构建时区
+
+    steps:
+
+      # 下载你的博客源码
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          submodules: recursive   # 如果 Blowfish 是 Git submodule，会同时下载主题
+          fetch-depth: 0          # 获取完整 Git 历史
+
+
+      # 配置 GitHub Pages
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v6
+
+
+      # 创建本地工具目录
+      - name: Create tools directory
+        run: |
+          mkdir -p "${HOME}/.local"
+
+
+      # 安装指定版本的 Hugo
+      - name: Install Hugo
+        run: |
+          echo "Installing Hugo ${HUGO_VERSION}..."
+
+          curl -sfL \
+            --output-dir "${{ runner.temp }}" \
+            -O "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_${HUGO_VERSION}_linux-amd64.tar.gz"
+
+          mkdir -p "${HOME}/.local/hugo"
+
+          tar \
+            -C "${HOME}/.local/hugo" \
+            -xf "${{ runner.temp }}/hugo_${HUGO_VERSION}_linux-amd64.tar.gz"
+
+          echo "${HOME}/.local/hugo" >> "${GITHUB_PATH}"
+
+
+      # 查看 Hugo 版本，方便以后排错
+      - name: Check Hugo version
+        run: |
+          hugo version
+
+
+      # 正式构建网站
+      - name: Build
+        run: |
+          hugo build \
+            --gc \
+            --minify \
+            --baseURL "${{ steps.pages.outputs.base_url }}/" \
+            --cacheDir "${{ runner.temp }}/hugo_cache"
+
+
+      # 把 public 目录作为 GitHub Pages 构建产物上传
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: ./public
+
+
+  # =========================
+  # 第二阶段：正式发布
+  # =========================
+  deploy:
+
+    runs-on: ubuntu-latest
+
+    needs: build   # 必须等上面的 build 成功之后才能部署
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+
+      # 把刚才生成的 public 发布到 GitHub Pages
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
