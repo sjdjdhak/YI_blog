@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Categories on 郭奕的笔记</title>
-    <link>http://localhost:50539/categories/</link>
-    <description>Recent content in Categories on 郭奕的笔记</description>
-    <generator>Hugo</generator>
+    <title>Categories on YI Blog</title>
+    <link>http://localhost:1313/categories/</link>
+    <description>Recent content in Categories on YI Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <atom:link href="http://localhost:50539/categories/index.xml" rel="self" type="application/rss+xml" />
+    <managingEditor>57212109@qq.com (Shark1)</managingEditor>
+    <webMaster>57212109@qq.com (Shark1)</webMaster>
+    <copyright>© 2026 Shark1</copyright>
+    <lastBuildDate>Tue, 01 Sep 2026 00:00:00 +0000</lastBuildDate><atom:link href="http://localhost:1313/categories/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>博客</title>
+      <link>http://localhost:1313/categories/%E5%8D%9A%E5%AE%A2/</link>
+      <pubDate>Tue, 01 Sep 2026 00:00:00 +0000</pubDate>
+      <author>57212109@qq.com (Shark1)</author>
+      <guid>http://localhost:1313/categories/%E5%8D%9A%E5%AE%A2/</guid>
+      <description></description>
+      
+    </item>
+    
   </channel>
 </rss>
